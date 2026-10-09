@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+
+# Database files & generated cache
+data/warehouse.duckdb
+data/raw/*.csv
+
+# Operating System & IDE
+.DS_Store
+.vscode/
+.idea/
