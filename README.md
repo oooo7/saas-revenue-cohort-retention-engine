@@ -144,8 +144,8 @@ Statistical regression and correlation analysis (`analysis/retention_analysis.py
 ### 1. Clone & Set Up Python Environment
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/saas-cohort-retention-engine.git
-cd saas-cohort-retention-engine
+git clone https://github.com/oooo7/saas-revenue-cohort-retention-engine.git
+cd saas-revenue-cohort-retention-engine
 
 # Install required analytics dependencies
 pip install -r requirements.txt
