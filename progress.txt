@@ -1,0 +1,17 @@
+# SaaS Retention Engine - Build Progress Log
+Initialized: 2026-10-10
+Status: In Progress
+
+## 2026-10-10 - Task 1: Metric Validation Test Suite
+- Implemented `tests/test_metrics.py` validating:
+  * Cohort retention percentage bounds (0% <= retention <= 100%, 100% at Month 0).
+  * Retained users count <= initial cohort size.
+  * MRR waterfall arithmetic identity: New + Reactivation + Expansion - Contraction - Churned = MoM Net Delta.
+  * Customer MoM MRR change delta: current_mrr - prior_mrr == net_mrr_change.
+  * Non-negativity of waterfall revenue components.
+  * RFM score bounds [1, 5] and segment classification coverage.
+- Test Run Output: `pytest -v tests/test_metrics.py`
+  * tests/test_metrics.py::test_cohort_retention_bounds PASSED [33%]
+  * tests/test_metrics.py::test_mrr_waterfall_math PASSED [66%]
+  * tests/test_metrics.py::test_rfm_segments_integrity PASSED [100%]
+  * Status: PASSED (3/3 passed in 0.65s)
