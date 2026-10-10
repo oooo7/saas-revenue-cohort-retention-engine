@@ -15,3 +15,11 @@ Status: In Progress
   * tests/test_metrics.py::test_mrr_waterfall_math PASSED [66%]
   * tests/test_metrics.py::test_rfm_segments_integrity PASSED [100%]
   * Status: PASSED (3/3 passed in 0.65s)
+
+## 2026-10-10 - Task 2: Streamlit Caching Optimization
+- Audited `app.py` for all DuckDB querying & heavy dataframe operations.
+- Implemented `@st.cache_data(ttl=600)` on:
+  * `load_data()`: Primary OLAP warehouse queries (`fct_monthly_retention`, `fct_mrr_movements`, `fct_rfm_segments`, `stg_activity`).
+  * `compute_filtered_cohort()`: Dynamic cohort matrix recalculation on filtered slices (channel, plan tier).
+- Verification: `python3 -c "import app"` executed cleanly without import/syntax errors.
+- Status: COMPLETED
