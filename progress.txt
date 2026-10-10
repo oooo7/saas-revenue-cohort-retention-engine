@@ -23,3 +23,14 @@ Status: In Progress
   * `compute_filtered_cohort()`: Dynamic cohort matrix recalculation on filtered slices (channel, plan tier).
 - Verification: `python3 -c "import app"` executed cleanly without import/syntax errors.
 - Status: COMPLETED
+
+## 2026-10-10 - Task 3: Zero-Division Defensive SQL Hardening
+- Audited `models/fct_monthly_retention.sql` for all mathematical division operations.
+- Verified defensive wrapping with `NULLIF(..., 0)` on:
+  * User retention rate: `(retained_users * 100.0) / NULLIF(cohort_size, 0)`
+  * MoM churn rate: `((prior_month_retained_users - retained_users) * 100.0) / NULLIF(prior_month_retained_users, 0)`
+  * Net Revenue Retention (NRR): `(cohort_current_mrr * 100.0) / NULLIF(cohort_baseline_mrr, 0)`
+  * MoM MRR growth rate: `((cohort_current_mrr - prior_month_cohort_mrr) * 100.0) / NULLIF(prior_month_cohort_mrr, 0)`
+- Executed pipeline rebuild: `python3 models/run_models.py` (Materialized in 0.34s).
+- Validated test suite: `pytest -v tests/test_metrics.py` (3/3 tests passed in 0.25s).
+- Status: COMPLETED
