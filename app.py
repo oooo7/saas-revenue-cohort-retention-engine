@@ -165,13 +165,10 @@ df_rfm = df_rfm_raw[df_rfm_raw["user_id"].isin(filtered_user_ids)].copy()
 df_movements = df_movements_raw[df_movements_raw["user_id"].isin(filtered_user_ids)].copy()
 df_activity = df_activity_raw[df_activity_raw["user_id"].isin(filtered_user_ids)].copy()
 
-# Recalculate dynamic cohort retention for filtered users
-if len(filtered_user_ids) == len(df_rfm_raw):
-    df_cohort = df_cohort_raw.copy()
-else:
-    # Dynamically aggregate from movements when filters are active
+@st.cache_data(ttl=600)
+def compute_filtered_cohort(df_filtered_movements: pd.DataFrame) -> pd.DataFrame:
     con_temp = duckdb.connect()
-    df_cohort = con_temp.execute("""
+    res = con_temp.execute("""
         WITH user_cohort_activity AS (
             SELECT
                 cohort_month,
@@ -181,7 +178,7 @@ else:
                 COUNT(DISTINCT user_id) AS total_users,
                 COUNT(DISTINCT CASE WHEN current_mrr > 0 THEN user_id END) AS retained_users,
                 SUM(current_mrr) AS cohort_current_mrr
-            FROM df_movements
+            FROM df_filtered_movements
             GROUP BY cohort_month, report_month
         ),
         baselines AS (
@@ -204,9 +201,16 @@ else:
         WHERE cohort_size > 0
         ORDER BY cohort_month, cohort_index
     """).fetchdf()
-    df_cohort["cohort_month"] = pd.to_datetime(df_cohort["cohort_month"])
-    df_cohort["report_month"] = pd.to_datetime(df_cohort["report_month"])
+    res["cohort_month"] = pd.to_datetime(res["cohort_month"])
+    res["report_month"] = pd.to_datetime(res["report_month"])
     con_temp.close()
+    return res
+
+# Recalculate dynamic cohort retention for filtered users
+if len(filtered_user_ids) == len(df_rfm_raw):
+    df_cohort = df_cohort_raw.copy()
+else:
+    df_cohort = compute_filtered_cohort(df_movements)
 
 # -------------------------------------------------------------
 # TOP EXECUTIVE KPI CARDS
